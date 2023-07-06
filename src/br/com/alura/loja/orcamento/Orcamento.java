@@ -1,19 +1,23 @@
 package br.com.alura.loja.orcamento;
 
 import br.com.alura.loja.orcamento.situacao.EmAnalise;
+import br.com.alura.loja.orcamento.situacao.Finalizado;
 import br.com.alura.loja.orcamento.situacao.SituacaoOrcamento;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Orcamento {
+public class Orcamento implements Orcavel{
+
     private BigDecimal valor;
-    private int quantidadeItens;
     private SituacaoOrcamento situacao;
+    private List<Orcavel> itens;
 
-    public Orcamento(BigDecimal valor, int quantidadeItens) {
-        this.valor = valor;
-        this.quantidadeItens = quantidadeItens;
-        this.situacao = new EmAnalise();
+    public Orcamento() {
+        this.valor = BigDecimal.ZERO; // Valor começando com 0
+        this.itens = new ArrayList<>(); // Lista de itens vazia
+        this.situacao = new EmAnalise(); // Situação começa em analise
     }
     public void aplicarDescontoExtra(){
         BigDecimal valorDoDescontoExtra = this.situacao.calcularValorDescontoExtra(this);
@@ -33,10 +37,18 @@ public class Orcamento {
     }
 
     public BigDecimal getValor() {
-        return valor;
+        // Simulação de lentidão numa chamada de API
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e){
+            throw new RuntimeException(e);
+        }
+
+        return this.valor;
     }
+
     public int getQuantidadeItens(){
-        return quantidadeItens;
+        return itens.size();
     }
 
     public SituacaoOrcamento getSituacao() {
@@ -45,5 +57,14 @@ public class Orcamento {
 
     public void setSituacao(SituacaoOrcamento situacao) {
         this.situacao = situacao;
+    }
+
+    public boolean isFinalizado() {
+        return situacao instanceof Finalizado;
+    }
+
+    public void adicionarItem(Orcavel item){
+        this.valor = valor.add(item.getValor());
+        this.itens.add(item);
     }
 }
